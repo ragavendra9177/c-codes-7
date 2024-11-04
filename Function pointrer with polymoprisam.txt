@@ -1,0 +1,39 @@
+#include <stdio.h>
+
+int add(int a, int b) {
+    return a + b;
+}
+
+int subtract(int a, int b) {
+    return a - b;
+}
+
+int multiply(int a, int b) {
+    return a * b;
+}
+
+int divide(int a, int b) {
+    if (b != 0)
+        return a / b;
+    else {
+        printf("Division by zero error\n");
+        return 0;
+    }
+}
+
+typedef int (*operationFunc)(int, int);
+
+void performOperation(operationFunc func, int x, int y) {
+    printf("Result: %d\n", func(x, y));
+}
+
+int main() {
+    int a = 10, b = 5;
+    operationFunc operations[4] = {add, subtract, multiply, divide};
+
+    for (int i = 0; i < 4; i++) {
+        performOperation(operations[i], a, b);
+    }
+
+    return 0;
+}

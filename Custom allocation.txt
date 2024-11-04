@@ -1,0 +1,68 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BLOCK_SIZE 256
+#define NUM_BLOCKS 1024
+
+// Structure to represent a block in the memory pool
+struct Block {
+    struct Block* next;
+};
+
+struct Block* free_list = NULL;
+void* memory_pool = NULL;
+
+// Initialize the memory pool and free list
+void init_memory_pool() {
+    memory_pool = malloc(NUM_BLOCKS * BLOCK_SIZE);
+    if (!memory_pool) {
+        printf("Memory allocation failed\n");
+        exit(1);
+    }
+
+    // Set up the free list
+    free_list = (struct Block*)memory_pool;
+    struct Block* current = free_list;
+
+    for (int i = 1; i < NUM_BLOCKS; i++) {
+        current->next = (struct Block*)((char*)memory_pool + i * BLOCK_SIZE);
+        current = current->next;
+    }
+    current->next = NULL;  // End of the free list
+}
+
+// Allocate a block from the memory pool
+void* custom_malloc() {
+    if (!free_list) {
+        printf("No more free memory\n");
+        return NULL;
+    }
+
+    struct Block* allocated_block = free_list;
+    free_list = free_list->next;  // Move the head of the list to the next block
+    return (void*)allocated_block;
+}
+
+// Free a block back to the memory pool
+void custom_free(void* block) {
+    struct Block* freed_block = (struct Block*)block;
+    freed_block->next = free_list;
+    free_list = freed_block;
+}
+
+int main() {
+    init_memory_pool();
+
+    // Allocate memory blocks
+    void* block1 = custom_malloc();
+    void* block2 = custom_malloc();
+
+    printf("Block1 address: %p\n", block1);
+    printf("Block2 address: %p\n", block2);
+
+    // Free memory blocks
+    custom_free(block1);
+    custom_free(block2);
+
+    return 0;
+}

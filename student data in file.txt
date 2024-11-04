@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Employee {
+    int id;
+    char name[50];
+    float salary;
+};
+
+void writeEmployeeData(const char* filename) {
+    FILE* file = fopen(filename, "wb");
+    if (!file) {
+        printf("Error opening file for writing\n");
+        exit(1);
+    }
+
+    struct Employee emp;
+    char choice;
+
+    do {
+        printf("Enter Employee ID: ");
+        scanf("%d", &emp.id);
+        printf("Enter Employee Name: ");
+        scanf("%s", emp.name);
+        printf("Enter Employee Salary: ");
+        scanf("%f", &emp.salary);
+
+        fwrite(&emp, sizeof(struct Employee), 1, file);
+
+        printf("Do you want to add another employee? (y/n): ");
+        scanf(" %c", &choice);
+    } while (choice == 'y' || choice == 'Y');
+
+    fclose(file);
+}
+
+void readEmployeeData(const char* filename) {
+    FILE* file = fopen(filename, "rb");
+    if (!file) {
+        printf("Error opening file for reading\n");
+        exit(1);
+    }
+
+    struct Employee emp;
+    while (fread(&emp, sizeof(struct Employee), 1, file)) {
+        if (feof(file) || ferror(file)) {
+            printf("File corruption detected during read\n");
+            break;
+        }
+        printf("ID: %d, Name: %s, Salary: %.2f\n", emp.id, emp.name, emp.salary);
+    }
+
+    fclose(file);
+}
+
+int main() {
+    char filename[] = "employee_data.bin";
+    int choice;
+
+    do {
+        printf("1. Write Employee Data\n");
+        printf("2. Read Employee Data\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                writeEmployeeData(filename);
+                break;
+            case 2:
+                readEmployeeData(filename);
+                break;
+            case 3:
+                printf("Exiting...\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}

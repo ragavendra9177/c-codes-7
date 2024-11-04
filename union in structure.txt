@@ -1,0 +1,44 @@
+#include <stdio.h>
+#include <string.h>
+
+// Structure to hold basic information
+struct Student {
+    char name[50];
+    int age;
+    union {
+        float gpa;          // GPA for students in college
+        int grade;          // Grade level for school students
+    } academicInfo;
+    int isCollegeStudent;   // Flag to indicate whether the student is in college or school
+};
+
+int main() {
+    struct Student students[2];
+
+    // Input for first student (college student)
+    strcpy(students[0].name, "Alice");
+    students[0].age = 20;
+    students[0].academicInfo.gpa = 3.8;  // College GPA
+    students[0].isCollegeStudent = 1;
+
+    // Input for second student (school student)
+    strcpy(students[1].name, "Bob");
+    students[1].age = 15;
+    students[1].academicInfo.grade = 10;  // Grade level
+    students[1].isCollegeStudent = 0;
+
+    // Display student information
+    for (int i = 0; i < 2; i++) {
+        printf("Name: %s\n", students[i].name);
+        printf("Age: %d\n", students[i].age);
+
+        if (students[i].isCollegeStudent) {
+            printf("GPA: %.2f\n", students[i].academicInfo.gpa);
+        } else {
+            printf("Grade Level: %d\n", students[i].academicInfo.grade);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
